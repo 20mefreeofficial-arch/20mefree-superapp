@@ -54,4 +54,35 @@ class LoginTest extends TestCase
         $response->assertOk();
         $response->assertSee($user->name);
     }
+
+    public function test_login_is_locked_out_after_too_many_failed_attempts(): void
+    {
+        User::factory()->create([
+            'email' => 'staff@20mefree.com',
+            'password' => 'password123',
+        ]);
+
+        for ($i = 0; $i < 5; $i++) {
+            $this->post('/login', [
+                'email' => 'staff@20mefree.com',
+                'password' => 'wrong-password',
+            ]);
+        }
+
+        $response = $this->post('/login', [
+            'email' => 'staff@20mefree.com',
+            'password' => 'password123',
+        ]);
+
+        $response->assertSessionHasErrors('email');
+        $this->assertGuest();
+    }
+
+    public function test_response_has_security_headers(): void
+    {
+        $response = $this->get('/login');
+
+        $response->assertHeader('X-Frame-Options', 'DENY');
+        $response->assertHeader('X-Content-Type-Options', 'nosniff');
+    }
 }

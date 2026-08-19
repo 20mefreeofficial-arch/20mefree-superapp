@@ -6,4 +6,14 @@
 @theme {
     --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+
+    /* Warna primer brand 20Mefree — dipakai secukupnya (tombol utama, aksen,
+       fokus) di atas palet netral, bukan sebagai warna dominan. */
+    --color-primary-50: #fbeaef;
+    --color-primary-100: #f3ccd8;
+    --color-primary-500: #71002c;
+    --color-primary-600: #5c0024;
+    --color-primary-700: #47001c;
+    --color-primary: #71002c;
+    --color-primary-dark: #47001c;
 }
