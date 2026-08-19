@@ -87,6 +87,25 @@ Login dengan salah satu akun dummy, contoh:
 
 (Daftar lengkap 18 akun ada di `docs/AKUN-DUMMY.md`)
 
+## Update ke versi terbaru (setelah setup pertama kali beres)
+
+Setiap kali ada perubahan/fitur baru yang sudah di-push ke GitHub, Anda tidak
+perlu mengulang semua langkah di atas dari awal. Cukup gunakan 2 script yang
+sudah disiapkan di folder `scripts/` (klik dua kali file-nya di File Explorer,
+atau jalankan lewat terminal):
+
+- **`scripts\update.bat`** — menarik kode terbaru dari GitHub, update
+  dependency (composer & npm), jalankan migration database yang baru (aman,
+  tidak menghapus data yang sudah ada), dan compile ulang tampilan.
+- **`scripts\start.bat`** — menjalankan aplikasi (sama seperti `php artisan
+  serve`), buka `http://127.0.0.1:8000` di browser setelahnya.
+
+Alur kerja rutinnya:
+
+1. Beri tahu saya perubahan yang diinginkan → saya kerjakan & push ke GitHub
+2. Anda jalankan `scripts\update.bat` (tunggu sampai selesai)
+3. Jalankan `scripts\start.bat`, lalu buka/refresh browser
+
 ## Mode pengembangan (opsional)
 
 Kalau ingin mengedit tampilan dan langsung lihat perubahan tanpa `npm run build`
