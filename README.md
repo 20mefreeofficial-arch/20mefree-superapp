@@ -47,11 +47,21 @@ Buat database MySQL (mis. lewat phpMyAdmin) sesuai `DB_DATABASE` di `.env`,
 lalu jalankan:
 
 ```bash
+npm install && npm run build
 php artisan migrate --seed
+php artisan serve
 ```
 
-Seeder akan mengisi role, divisi, posisi, dan 1 akun Super Admin awal
-(`superadmin@20mefree.com`).
+Seeder akan mengisi role, divisi, posisi, dan **18 akun dummy** (1 per
+role/posisi) yang bisa langsung dipakai login di `/login`. Lihat daftar
+lengkap email & password di [`docs/AKUN-DUMMY.md`](docs/AKUN-DUMMY.md).
+
+## Login
+
+Buka `/login`, masuk dengan salah satu akun dummy. Setelah berhasil,
+diarahkan ke `/dashboard` yang menampilkan role, divisi, posisi, dan atasan
+(`reports_to`) dari akun yang login — untuk memverifikasi struktur organisasi
+sudah benar sebelum modul bisnis dibangun di atasnya.
 
 ## Kontrol Akses (Role Middleware)
 

@@ -1,14 +1,25 @@
 <?php
 
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
-// Contoh struktur pembatasan akses per role. Modul nyata akan
-// menggantikan Route::view placeholder ini pada tahap berikutnya.
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login');
+    Route::post('/login', [AuthenticatedSessionController::class, 'store']);
+});
+
 Route::middleware('auth')->group(function () {
+    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
+
+    Route::get('/dashboard', DashboardController::class)->name('dashboard');
+
+    // Contoh struktur pembatasan akses per role. Modul nyata akan
+    // menggantikan Route::view placeholder ini pada tahap berikutnya.
     Route::middleware('role:superadmin')->prefix('superadmin')->group(function () {
         Route::view('/dashboard', 'welcome')->name('superadmin.dashboard');
     });
