@@ -37,6 +37,10 @@ Ringkasan level:
 
 ## Setup
 
+> Ingin menjalankan langsung dari GitHub di komputer sendiri (Laragon/XAMPP +
+> phpMyAdmin)? Ikuti panduan lengkap step-by-step di
+> [`docs/JALANKAN-LOKAL.md`](docs/JALANKAN-LOKAL.md).
+
 ```bash
 composer install
 cp .env.example .env
