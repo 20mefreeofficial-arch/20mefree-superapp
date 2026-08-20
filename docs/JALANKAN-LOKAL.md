@@ -3,6 +3,14 @@
 Panduan ini untuk menjalankan aplikasi dari GitHub di laptop/PC Anda (Windows/Mac/Linux),
 menggunakan phpMyAdmin lokal.
 
+> **Kalau sebelumnya sudah pernah setup** (database sudah ada dari versi
+> lama, dengan tabel `positions` dan 18 akun dummy): struktur database
+> berubah total di update ini (role & permission per modul/fungsi/divisi).
+> Jalankan `php artisan migrate:fresh --seed` (bukan `migrate --seed` biasa)
+> **sekali ini saja** supaya tabel lama ikut terhapus bersih. Setelah itu,
+> update-update berikutnya cukup pakai `scripts\update.bat` seperti biasa
+> (tidak akan menghapus data lagi).
+
 ## 1. Install prasyarat
 
 | Kebutuhan       | Rekomendasi                                                         |
@@ -62,9 +70,10 @@ DB_PASSWORD=
 php artisan migrate --seed
 ```
 
-Perintah ini otomatis membuat semua tabel dan **18 akun dummy** (lihat
-[`docs/AKUN-DUMMY.md`](AKUN-DUMMY.md)) — bisa dicek juga hasilnya lewat phpMyAdmin
-di tabel `users`, `roles`, `divisions`, `positions`.
+Perintah ini otomatis membuat semua tabel, 12 role sistem, 2 divisi
+(Sales/Non-Sales), dan **1 akun bootstrap Super Admin** (bukan data dummy —
+lihat [`docs/AKUN-AWAL.md`](AKUN-AWAL.md)). Semua akun lain dibuat sendiri
+lewat halaman **Pengguna** di aplikasi.
 
 ## 7. Compile tampilan (Tailwind CSS)
 
@@ -80,12 +89,13 @@ php artisan serve
 
 Buka browser ke **http://127.0.0.1:8000** → otomatis diarahkan ke halaman login.
 
-Login dengan salah satu akun dummy, contoh:
+Login dengan akun bootstrap:
 
-- Email: `superadmin@20mefree.com`
-- Password: `password123`
+- Email: `admin@20mefree.com`
+- Password: `GantiSegera#2026`
 
-(Daftar lengkap 18 akun ada di `docs/AKUN-DUMMY.md`)
+(Detail & alasan di `docs/AKUN-AWAL.md` — setelah login, buat akun asli tim
+Anda lewat menu **Pengguna**.)
 
 ## Update ke versi terbaru (setelah setup pertama kali beres)
 

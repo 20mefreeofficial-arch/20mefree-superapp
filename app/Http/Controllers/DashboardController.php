@@ -9,7 +9,7 @@ class DashboardController extends Controller
 {
     public function __invoke(Request $request): View
     {
-        $user = $request->user()->load(['role', 'division', 'position', 'reportsTo']);
+        $user = $request->user()->load(['role', 'division', 'reportsTo']);
 
         return view('dashboard', ['user' => $user]);
     }

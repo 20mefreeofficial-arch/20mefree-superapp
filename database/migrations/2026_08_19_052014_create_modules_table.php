@@ -7,25 +7,25 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Role sistem (super_admin, manager, dst.) tidak bisa dihapus lewat UI
-     * (is_system = true), tapi permission-nya tetap bisa diatur lewat
-     * role_permissions — kecuali Super Admin yang selalu full access.
-     * Role custom dibuat admin lewat UI (is_system = false, bisa dihapus).
+     * Registry modul sistem (mis. "Pengguna & Hak Akses"). Modul bisnis lain
+     * (Creative Production, dst.) akan ditambahkan ke tabel ini pada tahap
+     * pengerjaan masing-masing modul, tanpa perlu ubah struktur tabel.
      */
     public function up(): void
     {
-        Schema::create('roles', function (Blueprint $table) {
+        Schema::create('modules', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('description')->nullable();
-            $table->boolean('is_system')->default(false);
+            $table->unsignedInteger('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('roles');
+        Schema::dropIfExists('modules');
     }
 };

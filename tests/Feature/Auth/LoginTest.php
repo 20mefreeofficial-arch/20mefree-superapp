@@ -13,7 +13,7 @@ class LoginTest extends TestCase
 
     public function test_user_can_login_with_correct_credentials(): void
     {
-        $role = Role::create(['name' => 'Staff', 'slug' => 'staff', 'level' => 5]);
+        $role = Role::create(['name' => 'Administration', 'slug' => 'administration']);
         $user = User::factory()->create([
             'email' => 'staff@20mefree.com',
             'password' => 'password123',

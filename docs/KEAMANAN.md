@@ -13,14 +13,16 @@
   - `Permissions-Policy` — nonaktifkan akses kamera/mikrofon/lokasi browser secara default
   - `Content-Security-Policy` (aktif di luar mode local/dev) — membatasi sumber script/style/gambar hanya dari domain sendiri
   - `Strict-Transport-Security` — otomatis aktif saat diakses lewat HTTPS
-- **Role-based access control**: setiap route dibatasi middleware `role:<slug>` sesuai hierarki (superadmin/manajer/spv/leader/staff).
+- **Permission-based access control**: setiap route/aksi dicek lewat `User::hasPermission(modul, fungsi, aksi)` — bukan hardcode role, tapi data-driven dari tabel `role_permissions`, granular per modul/fungsi/divisi.
 - **Mass-assignment protection**: setiap model memakai atribut `#[Fillable]` eksplisit, bukan `$guarded = []`.
+- **Hard delete permanen, tanpa soft-delete**: menghapus pengguna/role custom langsung membuang record dari database. Tidak ada mekanisme yang bisa memunculkan kembali data yang sudah dihapus (lihat `docs/AKUN-AWAL.md`).
+- **Safeguard anti-lockout**: sistem menolak menghapus Super Admin terakhir, dan menolak user menghapus akunnya sendiri.
 
 ## Checklist WAJIB sebelum dipakai untuk data sungguhan (production)
 
 Jangan skip bagian ini — ini yang membedakan environment development (aman untuk demo/testing) dari environment yang siap dipakai tim beneran.
 
-1. **Ganti/hapus 18 akun dummy** (`docs/AKUN-DUMMY.md`) — password `password123` diketahui publik di repo ini. Buat akun asli dengan password kuat & unik per orang.
+1. **Ganti password akun bootstrap** (`docs/AKUN-AWAL.md`) — password awalnya diketahui publik di repo ini. Buat akun Super Admin asli dengan password kuat & unik lewat menu Pengguna, lalu ganti/hapus akun bootstrap.
 2. **Set di file `.env` server production:**
    ```env
    APP_ENV=production

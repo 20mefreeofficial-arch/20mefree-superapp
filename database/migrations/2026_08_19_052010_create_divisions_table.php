@@ -7,7 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
-     * Divisi: Advertiser, CRM, Branding, Creative.
+     * Divisi: Sales & Non-Sales. Dua divisi ini punya cara ukur performa
+     * yang berbeda (KPI sales vs. reach/engagement) — konteks divisi dipakai
+     * modul bisnis di tahap berikutnya untuk memilih metrik yang relevan,
+     * dan di sini untuk scoping permission per divisi.
      */
     public function up(): void
     {
@@ -15,6 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

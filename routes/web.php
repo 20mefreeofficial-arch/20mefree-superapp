@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -19,25 +21,9 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/dashboard', DashboardController::class)->name('dashboard');
 
-    // Contoh struktur pembatasan akses per role. Modul nyata akan
-    // menggantikan Route::view placeholder ini pada tahap berikutnya.
-    Route::middleware('role:superadmin')->prefix('superadmin')->group(function () {
-        Route::view('/dashboard', 'welcome')->name('superadmin.dashboard');
-    });
+    Route::resource('users', UserController::class)->except(['show']);
 
-    Route::middleware('role:superadmin,manajer')->prefix('manajemen')->group(function () {
-        Route::view('/dashboard', 'welcome')->name('manajemen.dashboard');
-    });
-
-    Route::middleware('role:superadmin,manajer,spv')->prefix('spv')->group(function () {
-        Route::view('/dashboard', 'welcome')->name('spv.dashboard');
-    });
-
-    Route::middleware('role:superadmin,manajer,spv,leader')->prefix('leader')->group(function () {
-        Route::view('/dashboard', 'welcome')->name('leader.dashboard');
-    });
-
-    Route::middleware('role:superadmin,manajer,spv,leader,staff')->prefix('staff')->group(function () {
-        Route::view('/dashboard', 'welcome')->name('staff.dashboard');
-    });
+    Route::resource('roles', RoleController::class)->except(['show', 'edit', 'update']);
+    Route::get('/roles/{role}/permissions', [RoleController::class, 'editPermissions'])->name('roles.permissions.edit');
+    Route::put('/roles/{role}/permissions', [RoleController::class, 'updatePermissions'])->name('roles.permissions.update');
 });

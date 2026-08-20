@@ -1,39 +1,61 @@
 # 20Mefree Super APP
 
-Sistem Enterprise Resource Planning (ERP) internal untuk tim 20Mefree. Repo ini
-adalah **tahap awal (structure)** — fondasi backend, struktur role/hierarki
-organisasi, dan skema database, sebelum modul-modul bisnis (campaign, konten,
-laporan, dsb.) dibangun di atasnya.
+Sistem Enterprise Resource Planning (ERP) internal untuk tim 20Mefree — tim
+kreatif yang memproduksi konten iklan & organik. Alur operasional inti yang
+dikelola sistem ini: **produksi konten → distribusi ke platform → pengukuran
+performa → evaluasi & keputusan budget**, bukan ERP manufaktur/distribusi.
+
+Repo ini sedang dibangun bertahap. Tahap sekarang: **Fondasi & Master Data
+— fungsi User & RBAC** (manajemen pengguna, role, dan permission per
+modul/fungsi/divisi). Fungsi fondasi lain (Master Produk & SKU, Master
+Akun, Approval Engine, Audit Log, Naming Convention Engine) serta modul
+bisnis akan menyusul di tahap berikutnya.
 
 ## Stack
 
 - **Framework**: Laravel 12 (PHP 8.4)
 - **Database**: MySQL, dikelola lewat phpMyAdmin
-- **Media**: file foto/video tidak disimpan di server — hanya disimpan sebagai
-  link/URL eksternal (lihat tabel `media_links`)
+- **Tema**: warna primer `#71002c`, desain elegant & minim warna, responsive
+  penuh (desktop/tablet/handphone)
 
-## Struktur Organisasi
+## Struktur Divisi
 
-Lihat [`docs/STRUKTUR-ORGANISASI.md`](docs/STRUKTUR-ORGANISASI.md) untuk detail
-hierarki role, divisi, posisi, dan aturan akses.
+Dua divisi dengan cara ukur performa yang **berbeda** — sistem sadar
+konteks divisi ini di setiap perhitungan KPI ke depannya:
 
-Ringkasan level:
+| Divisi | Fokus | Platform | KPI |
+|---|---|---|---|
+| **Sales** | Iklan berorientasi penjualan | Facebook Ads, Shopee Ads, TikTok Ads | Spend, Omzet, ROAS, CPA/CPP, CTR, Konversi |
+| **Non-Sales** | Awareness & pertumbuhan organik | Facebook, TikTok, Instagram | Reach, Impression, Views, VTR, Engagement Rate, CPM, Follower Growth |
 
-1. **Super Admin** — akses penuh
-2. **Manajer** — setara Super Admin, dengan batasan tertentu
-3. **SPV** — membawahi semua Leader lintas divisi
-4. **Leader** — memimpin satu divisi (ADV, CRM, Branding, Creative)
-5. **Staff** — posisi spesifik sesuai divisi
+## Role Sistem
 
-## Struktur Database (awal)
+Super Admin, Manager, Supervisor, Team Lead, Scriptwriter, Videographer,
+Editor, Designer, Media Buyer, Admin Sales/CS, Administration, People
+Management — plus **Role Custom** yang bisa dibuat lewat UI dengan
+permission-nya sendiri.
 
-| Tabel          | Fungsi                                                             |
-|----------------|---------------------------------------------------------------------|
-| `roles`        | 5 level role (superadmin, manajer, spv, leader, staff)              |
-| `divisions`    | Advertiser, CRM, Branding, Creative                                 |
-| `positions`    | Jabatan spesifik per divisi (mis. Staff SEO, Staff CWN)              |
-| `users`        | User + relasi `role_id`, `division_id`, `position_id`, `reports_to_id` |
-| `media_links`  | Link foto/video eksternal (bukan file fisik)                        |
+## Model Permission (RBAC)
+
+Permission diatur **per modul → per fungsi → per divisi**, dengan hak CRUD
+(Lihat/Tambah/Ubah/Hapus) terpisah untuk masing-masing kombinasi. Contoh:
+role "Team Lead" bisa diberi akses modul Creative Production, fungsi
+Project Management, hanya permission Lihat+Tambah, khusus divisi Non-Sales.
+
+Super Admin selalu full access (bypass otomatis, tidak butuh diatur).
+Role lain — termasuk role sistem — **tidak punya permission apapun secara
+default**, harus diatur eksplisit lewat halaman **Role & Permission**.
+
+## Struktur Database (tahap ini)
+
+| Tabel | Fungsi |
+|---|---|
+| `roles` | Role sistem (`is_system=true`) & role custom buatan admin |
+| `divisions` | Sales, Non-Sales |
+| `modules` | Registry modul sistem (baru ada "Pengguna & Hak Akses") |
+| `module_functions` | Fungsi di dalam modul, tempat permission diberikan |
+| `role_permissions` | Permission CRUD per role + fungsi + (opsional) divisi |
+| `users` | Akun, terhubung ke `role_id`, `division_id`, `reports_to_id` |
 
 ## Setup
 
@@ -56,25 +78,27 @@ php artisan migrate --seed
 php artisan serve
 ```
 
-Seeder akan mengisi role, divisi, posisi, dan **18 akun dummy** (1 per
-role/posisi) yang bisa langsung dipakai login di `/login`. Lihat daftar
-lengkap email & password di [`docs/AKUN-DUMMY.md`](docs/AKUN-DUMMY.md).
+**Tidak ada data dummy.** Seeder hanya membuat: 12 role sistem, 2 divisi,
+modul "Pengguna & Hak Akses", dan **1 akun bootstrap Super Admin** —
+lihat [`docs/AKUN-AWAL.md`](docs/AKUN-AWAL.md). Semua akun lain dibuat sendiri
+lewat halaman **Pengguna** di aplikasi. Setiap penghapusan data adalah
+**hard delete permanen** (tidak akan "muncul lagi").
 
-## Login
+## Login & Permission
 
-Buka `/login`, masuk dengan salah satu akun dummy. Setelah berhasil,
-diarahkan ke `/dashboard` yang menampilkan role, divisi, posisi, dan atasan
-(`reports_to`) dari akun yang login — untuk memverifikasi struktur organisasi
-sudah benar sebelum modul bisnis dibangun di atasnya.
+Buka `/login`. Setelah masuk, menu navigasi (Dashboard/Pengguna/Role &
+Permission) otomatis menyesuaikan hak akses user yang login — menu yang
+tidak diizinkan tidak akan tampil, dan mengakses URL-nya langsung akan
+ditolak (403).
 
-## Kontrol Akses (Role Middleware)
+## Keamanan
 
-Middleware `role:<slug1>,<slug2>,...` tersedia untuk membatasi route
-berdasarkan role user yang login. Contoh struktur pembagian route ada di
-`routes/web.php` (`/superadmin`, `/manajemen`, `/spv`, `/leader`, `/staff`).
+Lihat [`docs/KEAMANAN.md`](docs/KEAMANAN.md) — rate limiting login, security
+headers, session hardening, dan checklist sebelum dipakai untuk data
+sungguhan (production).
 
 ## Tahap Selanjutnya
 
-Tahap ini baru mencakup fondasi (struktur database + role). Modul bisnis
-(manajemen campaign, laporan kinerja per divisi, task management, dsb.) akan
-dibangun pada tahap berikutnya di atas struktur ini.
+Setelah User & RBAC ini stabil: Master Produk & SKU, Master Akun (platform
+iklan/sosial), Approval Engine, Audit Log, Naming Convention Engine — baru
+kemudian modul bisnis (produksi konten, campaign, laporan performa).
